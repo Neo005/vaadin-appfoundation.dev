@@ -55,6 +55,22 @@ public class LangTest {
         Lang.setLocale(Locale.ENGLISH);
         assertEquals("Foo bar bar bar", Lang.getMessage("TEST", "bar", "bar"));
     }
+    
+    @Test
+    public void getMessageWithSameLanguageDifferentCountry() {
+    	URL url = InternationalizationServletTest.class.getClassLoader()
+    	.getResource(
+    			"org/vaadin/appfoundation/test/i18n/translations.pt.xml");
+    	File all = new File(url.getFile());
+    	
+    	InternationalizationServlet.loadTranslations(new TmxSourceReader(all));
+    	Locale locale = new Locale("pt", "BR");
+    	Lang.setLocale(locale);
+    	assertEquals("Test1", Lang.getMessage("TEST"));
+    	locale = new Locale("pt", "PT");
+    	Lang.setLocale(locale);
+    	assertEquals("Test2", Lang.getMessage("TEST"));
+    }
 
     @Test(expected = IllegalArgumentException.class)
     public void initializeWithNullApplication() {
