@@ -32,7 +32,7 @@ public class ViewItem implements Serializable {
     @SuppressWarnings("unchecked")
     public ViewItem(Object viewId) {
         if (viewId instanceof Class) {
-            if (AbstractView.class.isAssignableFrom((Class<?>) viewId)) {
+            if (View.class.isAssignableFrom((Class<?>) viewId)) {
                 setFactory(new DefaultViewFactory());
                 viewClass = (Class<? extends View>) viewId;
             }
