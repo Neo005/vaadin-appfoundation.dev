@@ -17,11 +17,13 @@ import org.vaadin.appfoundation.view.DefaultViewFactory;
 import org.vaadin.appfoundation.view.DispatchEvent;
 import org.vaadin.appfoundation.view.DispatchEventListener;
 import org.vaadin.appfoundation.view.DispatchException;
+import org.vaadin.appfoundation.view.NoViewParentRegisteredException;
 import org.vaadin.appfoundation.view.View;
 import org.vaadin.appfoundation.view.ViewContainer;
 import org.vaadin.appfoundation.view.ViewFactory;
 import org.vaadin.appfoundation.view.ViewHandler;
 import org.vaadin.appfoundation.view.ViewItem;
+import org.vaadin.appfoundation.view.ViewNotRegisteredException;
 
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.UriFragmentUtility;
@@ -198,10 +200,6 @@ public class ViewHandlerTest {
         ViewItem item = ViewHandler.addView("test");
         item.setView(view);
 
-        ViewHandler.activateView("test");
-        // Parent not set
-        assertFalse((Boolean) viewActivated.getValue());
-
         ViewContainer container = new ViewContainer() {
             public void activate(View view) {
                 parentCalled.setValue(true);
@@ -219,6 +217,12 @@ public class ViewHandlerTest {
         // Parent is now set
         assertTrue((Boolean) viewActivated.getValue());
         assertTrue((Boolean) parentCalled.getValue());
+    }
+    
+    @Test(expected=NoViewParentRegisteredException.class)
+    public void activateViewNoParentSet() {
+    	ViewHandler.addView("test");    	
+    	ViewHandler.activateView("test");
     }
 
     @Test
@@ -241,13 +245,9 @@ public class ViewHandlerTest {
             }
         };
 
+        
         ViewItem item = ViewHandler.addView("test");
         item.setView(view);
-
-        ViewHandler.activateView("test");
-        // Parent not set
-        assertFalse((Boolean) viewDeactivated.getValue());
-
         ViewContainer container = new ViewContainer() {
             public void activate(View view) {
 
@@ -259,6 +259,10 @@ public class ViewHandlerTest {
         };
 
         ViewHandler.setParent("test", container);
+        ViewHandler.activateView("test");
+        // Parent not set
+        assertFalse((Boolean) viewDeactivated.getValue());
+
 
         ViewHandler.deactivateView("test");
         // Parent is now set
@@ -443,8 +447,6 @@ public class ViewHandlerTest {
         ViewHandler.addListener(listener);
         ViewHandler.addListener(listener2);
 
-        ViewHandler.activateView("test");
-
         ViewContainer container = new ViewContainer() {
             public void activate(View view) {
                 parentCalled.setValue(true);
@@ -556,8 +558,6 @@ public class ViewHandlerTest {
 
         ViewHandler.addListener(listener);
         ViewHandler.addListener(listener2);
-
-        ViewHandler.activateView("test");
 
         ViewContainer container = new ViewContainer() {
             public void activate(View view) {
